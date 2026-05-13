@@ -4,13 +4,13 @@
 [![gRPC](https://img.shields.io/badge/gRPC-v1.62-blue.svg)](https://grpc.io)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
-**Sovereign Orchestrator** is a high-performance, resource-efficient AI orchestration layer designed to coordinate multiple locally-hosted Small Language Models (SLMs) into a single, unified logical unit. Built in Rust with gRPC, it enables enterprise-grade AI capabilities on consumer-grade hardware.
+**Sovereign Orchestrator** is a high performance, resource efficient AI orchestration layer designed to coordinate multiple locally hosted Small Language Models (SLMs) into a single, unified logical unit. Built in Rust with gRPC, it enables enterprise grade AI capabilities on consumer grade hardware.
 
----
+
 
 ## 🏗️ System Architecture
 
-The system follows a modular, sidecar-based architecture where a central **Gateway** handles routing and memory management, while individual **Sidecars** wrap inference engines.
+The system follows a modular, sidecar based architecture where a central **Gateway** handles routing and memory management, while individual **Sidecars** wrap inference engines.
 
 ```mermaid
 graph TD
@@ -65,15 +65,15 @@ AIORC/
 ## 🚀 Key Components & Connections
 
 ### 1. **Unified Gateway (`src/bin/gateway.rs`)**
-The entry point for all client requests. It exposes an Axum-based HTTP REST API and coordinates with the internal modules to fulfill queries.
+The entry point for all client requests. It exposes an Axum based HTTP REST API and coordinates with the internal modules to fulfill queries.
 
 ### 2. **Semantic Router (`src/routing/`)**
-The "brain" of the orchestrator. It performs a two-stage analysis:
+The "brain" of the orchestrator. It performs a two stage analysis:
 - **Complexity Scoring:** Analyzes prompt structure to determine if it needs a small, fast model or a larger, analytical one.
 - **Task Classification:** Maps prompts to specific domains (Code, Logic, Creative, etc.) using lightweight semantic embeddings.
 
 ### 3. **Memory Manager (`src/memory/`)**
-Implements a **Warm-Swap** strategy. It tracks VRAM usage across models and manages an LRU (Least Recently Used) cache to swap model weights between System RAM and VRAM/NVMe, ensuring sub-500ms model readiness.
+Implements a **Warm-Swap** strategy. It tracks VRAM usage across models and manages an LRU (Least Recently Used) cache to swap model weights between System RAM and VRAM/NVMe, ensuring sub 500ms model readiness.
 
 ### 4. **Model Sidecars (`src/bin/sidecar.rs`)**
 Each model runs in its own process, wrapped by a gRPC sidecar. This allows for:
@@ -82,7 +82,7 @@ Each model runs in its own process, wrapped by a gRPC sidecar. This allows for:
 - **Abstraction:** The gateway speaks a unified gRPC protocol regardless of the underlying inference engine.
 
 ### 5. **Semantic Cache (`src/memory/semantic_cache.rs`)**
-A local vector-based cache that stores previously computed "logic chains." If a new prompt is semantically similar to a cached one, the system can return the cached result instantly.
+A local vector based cache that stores previously computed "logic chains." If a new prompt is semantically similar to a cached one, the system can return the cached result instantly.
 
 ---
 
