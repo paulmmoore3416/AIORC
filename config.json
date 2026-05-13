@@ -1,0 +1,80 @@
+{
+  "orchestrator": {
+    "name": "Sovereign Orchestrator",
+    "version": "0.1.0",
+    "max_concurrent_requests": 100,
+    "request_timeout_ms": 30000,
+    "enable_metrics": true,
+    "metrics_interval_ms": 5000
+  },
+  "router": {
+    "embedding_model": "all-MiniLM-L6-v2",
+    "complexity_threshold_low": 3,
+    "complexity_threshold_high": 7,
+    "enable_consensus_mode": true,
+    "consensus_threshold": 0.85,
+    "enable_semantic_cache": true,
+    "cache_similarity_threshold": 0.92
+  },
+  "memory": {
+    "max_vram_mb": 4096,
+    "max_ram_mb": 8192,
+    "enable_warm_swap": true,
+    "swap_timeout_ms": 400,
+    "nvme_swap_path": "/tmp/model_swap",
+    "model_cache_size": 3
+  },
+  "models": [
+    {
+      "id": "tinyllama-1.1b",
+      "name": "TinyLlama-1.1B",
+      "model_path": "/models/tinyllama-1.1b.gguf",
+      "model_type": "general",
+      "parameters": 1100000000,
+      "vram_required_mb": 512,
+      "port": 50051,
+      "supported_tasks": ["chat", "general"],
+      "quantization": "Q4_K_M"
+    },
+    {
+      "id": "phi-3-mini-3.8b",
+      "name": "Phi-3-Mini-3.8B",
+      "model_path": "/models/phi-3-mini-3.8b.gguf",
+      "model_type": "general",
+      "parameters": 3800000000,
+      "vram_required_mb": 2048,
+      "port": 50052,
+      "supported_tasks": ["reasoning", "summarization"],
+      "quantization": "Q4_K_M"
+    },
+    {
+      "id": "deepseek-coder-1.3b",
+      "name": "DeepSeek-Coder-1.3B",
+      "model_path": "/models/deepseek-coder-1.3b.gguf",
+      "model_type": "code",
+      "parameters": 1300000000,
+      "vram_required_mb": 1024,
+      "port": 50053,
+      "supported_tasks": ["code", "logic"],
+      "quantization": "Q4_K_M"
+    },
+    {
+      "id": "mistral-7b",
+      "name": "Mistral-7B-v0.3",
+      "model_path": "/models/mistral-7b-v0.3.gguf",
+      "model_type": "general",
+      "parameters": 7000000000,
+      "vram_required_mb": 4096,
+      "port": 50054,
+      "supported_tasks": ["expert", "analysis", "code"],
+      "quantization": "Q4_K_M"
+    }
+  ],
+  "gateway": {
+    "host": "0.0.0.0",
+    "port": 9090,
+    "max_batch_size": 32,
+    "enable_cors": true,
+    "allowed_origins": ["*"]
+  }
+}

@@ -1,0 +1,172 @@
+syntax = "proto3";
+
+package orchestrator;
+
+// ============================================================================
+// Core Service Definitions
+// ============================================================================
+
+service ModelWorker {
+  // Streaming inference endpoint - bi-directional for real-time token delivery
+  rpc Generate(InferenceRequest) returns (stream InferenceResponse);
+  
+  // Health check endpoint
+  rpc HealthCheck(HealthCheckRequest) returns (HealthCheckResponse);
+  
+  // Model metadata endpoint
+  rpc GetModelInfo(ModelInfoRequest) returns (ModelInfoResponse);
+}
+
+service OrchestratorRouter {
+  // Main routing endpoint - accepts prompt and routes to appropriate model
+  rpc Route(RoutingRequest) returns (stream RoutingResponse);
+  
+  // Service discovery - list available models
+  rpc DiscoverModels(DiscoveryRequest) returns (DiscoveryResponse);
+  
+  // Get routing statistics
+  rpc GetStats(StatsRequest) returns (StatsResponse);
+}
+
+service OrchestratorGateway {
+  // Unified entry point - single endpoint that looks like a large model
+  rpc Query(GatewayRequest) returns (stream GatewayResponse);
+  
+  // Batch processing
+  rpc BatchQuery(BatchGatewayRequest) returns (stream BatchGatewayResponse);
+}
+
+// ============================================================================
+// Message Definitions
+// ============================================================================
+
+// Request to generate inference
+message InferenceRequest {
+  string prompt = 1;
+  float temperature = 2;
+  int32 max_tokens = 3;
+  string top_p = 4;
+  map<string, string> metadata = 5;
+  string request_id = 6;
+  int64 timestamp = 7;
+}
+
+// Response from inference
+message InferenceResponse {
+  string token = 1;
+  bool is_final = 2;
+  float confidence_score = 3;
+  string request_id = 4;
+  int32 token_count = 5;
+}
+
+// Health check request
+message HealthCheckRequest {
+  string service_name = 1;
+}
+
+// Health check response
+message HealthCheckResponse {
+  bool healthy = 1;
+  float vram_usage = 2;
+  float cpu_usage = 3;
+  string status = 4;
+}
+
+// Model metadata request
+message ModelInfoRequest {
+  string model_id = 1;
+}
+
+// Model metadata response
+message ModelInfoResponse {
+  string model_id = 1;
+  string model_name = 2;
+  int32 parameters = 3;
+  string architecture = 4;
+  int32 vram_required = 5;
+  repeated string supported_tasks = 6;
+  float avg_latency_ms = 7;
+}
+
+// Routing request
+message RoutingRequest {
+  string prompt = 1;
+  int32 complexity_score = 2;
+  string preferred_model = 3;
+  bool require_consensus = 4;
+  string request_id = 5;
+  int64 timestamp = 6;
+}
+
+// Routing response with token streaming
+message RoutingResponse {
+  string token = 1;
+  string routed_model = 2;
+  float confidence = 3;
+  bool is_final = 4;
+  string request_id = 5;
+}
+
+// Service discovery request
+message DiscoveryRequest {
+  string filter_by_task = 1;
+}
+
+// Service discovery response
+message DiscoveryResponse {
+  repeated ModelMetadata models = 1;
+}
+
+// Model metadata for discovery
+message ModelMetadata {
+  string model_id = 1;
+  string address = 2;
+  int32 port = 3;
+  string status = 4;
+  repeated string supported_tasks = 5;
+  float current_load = 6;
+}
+
+// Statistics request
+message StatsRequest {
+  bool detailed = 1;
+}
+
+// Statistics response
+message StatsResponse {
+  int32 total_requests = 1;
+  float avg_latency_ms = 2;
+  float throughput_rps = 3;
+  map<string, int32> requests_per_model = 4;
+  float memory_usage_percent = 5;
+}
+
+// Gateway request - unified interface
+message GatewayRequest {
+  string prompt = 1;
+  float temperature = 2;
+  int32 max_tokens = 3;
+  string mode = 4; // "fast", "balanced", "accurate"
+  string request_id = 5;
+}
+
+// Gateway response
+message GatewayResponse {
+  string token = 1;
+  bool is_final = 2;
+  float confidence = 3;
+  string request_id = 4;
+}
+
+// Batch gateway request
+message BatchGatewayRequest {
+  repeated GatewayRequest requests = 1;
+}
+
+// Batch gateway response
+message BatchGatewayResponse {
+  string request_id = 1;
+  string token = 2;
+  bool is_final = 3;
+}

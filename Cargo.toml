@@ -1,0 +1,65 @@
+[package]
+name = "sovereign_orchestrator"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+tokio = { version = "1.35", features = ["full"] }
+tonic = "0.11"
+prost = "0.12"
+prost-types = "0.12"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+tracing = "0.1"
+tracing-subscriber = "0.3"
+async-trait = "0.1"
+lru = "0.12"
+uuid = { version = "1.0", features = ["v4", "serde"] }
+chrono = { version = "0.4", features = ["serde"] }
+tokio-stream = "0.1"
+parking_lot = "0.12"
+bytemuck = "1.14"
+ndarray = "0.15"
+ndarray-rand = "0.14"
+rand = "0.8"
+dashmap = "5.5"
+futures = "0.3"
+tower = "0.4"
+tower-service = "0.3"
+tower-http = { version = "0.5", features = ["trace", "cors"] }
+hyper = "1.1"
+axum = "0.7"
+thiserror = "1.0"
+anyhow = "1.0"
+bytes = "1.5"
+hex = "0.4"
+num_cpus = "1.16"
+memory-stats = "1.0"
+regex = "1.10"
+lazy_static = "1.4"
+sha2 = "0.10"
+
+[build-dependencies]
+tonic-build = "0.11"
+prost-build = "0.12"
+
+[[bin]]
+name = "orchestrator_gateway"
+path = "src/bin/gateway.rs"
+
+[[bin]]
+name = "model_sidecar"
+path = "src/bin/sidecar.rs"
+
+[[bin]]
+name = "router"
+path = "src/bin/router.rs"
+
+[lib]
+name = "sovereign_orchestrator"
+path = "src/lib.rs"
+
+[profile.release]
+opt-level = 3
+lto = true
+codegen-units = 1
