@@ -17,8 +17,8 @@
     "cache_similarity_threshold": 0.92
   },
   "memory": {
-    "max_vram_mb": 4096,
-    "max_ram_mb": 8192,
+    "max_vram_mb": 12288,
+    "max_ram_mb": 16384,
     "enable_warm_swap": true,
     "swap_timeout_ms": 400,
     "nvme_swap_path": "/tmp/model_swap",
@@ -27,9 +27,10 @@
   "models": [
     {
       "id": "tinyllama-1.1b",
-      "name": "TinyLlama-1.1B",
+      "name": "tinyllama",
       "model_path": "/models/tinyllama-1.1b.gguf",
       "model_type": "general",
+      "backend": "simulation",
       "parameters": 1100000000,
       "vram_required_mb": 512,
       "port": 50051,
@@ -37,36 +38,16 @@
       "quantization": "Q4_K_M"
     },
     {
-      "id": "phi-3-mini-3.8b",
-      "name": "Phi-3-Mini-3.8B",
-      "model_path": "/models/phi-3-mini-3.8b.gguf",
-      "model_type": "general",
-      "parameters": 3800000000,
-      "vram_required_mb": 2048,
-      "port": 50052,
-      "supported_tasks": ["reasoning", "summarization"],
-      "quantization": "Q4_K_M"
-    },
-    {
-      "id": "deepseek-coder-1.3b",
-      "name": "DeepSeek-Coder-1.3B",
-      "model_path": "/models/deepseek-coder-1.3b.gguf",
+      "id": "granite-code-8b",
+      "name": "granite-code:8b",
+      "model_path": "/models/granite-code-8b.gguf",
       "model_type": "code",
-      "parameters": 1300000000,
-      "vram_required_mb": 1024,
+      "backend": "ollama",
+      "ollama_endpoint": "http://localhost:11434",
+      "parameters": 8000000000,
+      "vram_required_mb": 6144,
       "port": 50053,
-      "supported_tasks": ["code", "logic"],
-      "quantization": "Q4_K_M"
-    },
-    {
-      "id": "mistral-7b",
-      "name": "Mistral-7B-v0.3",
-      "model_path": "/models/mistral-7b-v0.3.gguf",
-      "model_type": "general",
-      "parameters": 7000000000,
-      "vram_required_mb": 4096,
-      "port": 50054,
-      "supported_tasks": ["expert", "analysis", "code"],
+      "supported_tasks": ["code", "logic", "expert"],
       "quantization": "Q4_K_M"
     }
   ],

@@ -64,13 +64,21 @@ impl MetricsCollector {
             0.0
         };
 
+        let vram_usage = 0.0; // Still hard to get without nvidia-smi bindings
+        
+        let memory_usage = if let Some(usage) = memory_stats::memory_stats() {
+            (usage.physical_mem as f32 / (1024.0 * 1024.0 * 1024.0)) * 100.0 // Normalize as needed
+        } else {
+            0.0
+        };
+
         SystemMetrics {
             total_requests,
             average_latency_ms: average_latency,
-            throughput_rps: average_latency / 1000.0,
-            vram_usage_percent: 0.0,
-            cpu_usage_percent: 0.0,
-            memory_usage_percent: 0.0,
+            throughput_rps: if average_latency > 0.0 { 1000.0 / average_latency } else { 0.0 },
+            vram_usage_percent: vram_usage,
+            cpu_usage_percent: 0.0, // Placeholder
+            memory_usage_percent: memory_usage.min(100.0),
             active_models: 0,
             model_switch_count: self.model_switches.load(Ordering::Relaxed),
             cache_hit_rate,

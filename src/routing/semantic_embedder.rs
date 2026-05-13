@@ -1,17 +1,14 @@
-use crate::core::{OrchestratorError, Result};
 use std::collections::HashMap;
 
 /// Lightweight semantic embedder using TF-IDF-like approach
 pub struct SemanticEmbedder {
     task_vectors: HashMap<String, Vec<f32>>,
-    vocabulary: HashMap<String, usize>,
 }
 
 impl SemanticEmbedder {
     pub fn new() -> Self {
         let mut embedder = SemanticEmbedder {
             task_vectors: HashMap::new(),
-            vocabulary: HashMap::new(),
         };
         embedder.initialize_task_vectors();
         embedder

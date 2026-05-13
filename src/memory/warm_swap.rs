@@ -1,6 +1,5 @@
 use crate::core::Result;
 use lru::LruCache;
-use std::collections::HashMap;
 use std::num::NonZeroUsize;
 use parking_lot::Mutex;
 use std::sync::Arc;
@@ -55,7 +54,7 @@ impl WarmSwapManager {
 
         // Check if already loaded
         if cache.contains(model_id) {
-            if let Some(mut weights) = cache.get_mut(model_id) {
+            if let Some(weights) = cache.get_mut(model_id) {
                 weights.last_accessed = self.get_current_time_ms();
             }
             

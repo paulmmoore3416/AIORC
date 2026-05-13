@@ -68,9 +68,8 @@ impl ModelWorker for ModelWorkerService {
         let (tx, rx) = mpsc::channel(128);
 
         tokio::spawn(async move {
-            match engine.infer(&inner.prompt, inner.temperature, inner.max_tokens) {
+            match engine.infer(&inner.prompt, inner.temperature, inner.max_tokens).await {
                 Ok(tokens) => {
-                    let total_tokens = tokens.len() as i32;
                     for (idx, token) in tokens.iter().enumerate() {
                         let is_final = idx == tokens.len() - 1;
                         let response = InferenceResponse {
@@ -141,6 +140,7 @@ mod tests {
             "/models/test.gguf".to_string(),
             "test-model".to_string(),
             1000000,
+            crate::inference::inference_engine::EngineBackend::Simulation,
         ));
         let sidecar = ModelSidecar::new("model-1".to_string(), engine, 50051);
         assert_eq!(sidecar.model_id, "model-1");

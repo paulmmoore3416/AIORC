@@ -3,7 +3,6 @@ use crate::routing::{ComplexityScorer, SemanticEmbedder, ServiceRegistry};
 use std::sync::Arc;
 
 pub struct Router {
-    complexity_scorer: ComplexityScorer,
     semantic_embedder: SemanticEmbedder,
     service_registry: Arc<ServiceRegistry>,
     consensus_threshold: f32,
@@ -12,7 +11,6 @@ pub struct Router {
 impl Router {
     pub fn new(service_registry: Arc<ServiceRegistry>) -> Self {
         Router {
-            complexity_scorer: ComplexityScorer,
             semantic_embedder: SemanticEmbedder::new(),
             service_registry,
             consensus_threshold: 0.85,

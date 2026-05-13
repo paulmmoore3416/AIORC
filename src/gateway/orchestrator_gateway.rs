@@ -1,14 +1,13 @@
 use crate::core::{Config, MetricsCollector, Result};
-use crate::routing::{Router, ServiceRegistry};
+use crate::routing::{Router as OrchestratorRouter, ServiceRegistry};
 use crate::memory::MemoryManager;
 use crate::gateway::handlers::create_router as create_http_router;
 use std::sync::Arc;
-use axum::Router as AxumRouter;
 use tracing::Level;
 
 pub struct OrchestratorGateway {
     config: Config,
-    router: Router,
+    router: Arc<OrchestratorRouter>,
     service_registry: Arc<ServiceRegistry>,
     memory_manager: Arc<MemoryManager>,
     metrics_collector: Arc<MetricsCollector>,
@@ -17,7 +16,7 @@ pub struct OrchestratorGateway {
 impl OrchestratorGateway {
     pub fn new(config: Config) -> Result<Self> {
         let service_registry = Arc::new(ServiceRegistry::new());
-        
+
         // Register models from config
         for model_config in &config.models {
             let info = crate::core::types::ModelWorkerInfo {
@@ -32,8 +31,8 @@ impl OrchestratorGateway {
             service_registry.register(info)?;
         }
 
-        let router = Router::new(Arc::clone(&service_registry));
-        
+        let router = Arc::new(OrchestratorRouter::new(Arc::clone(&service_registry)));
+
         let memory_manager = Arc::new(MemoryManager::new(
             config.memory.max_vram_mb,
             config.memory.model_cache_size,
@@ -82,6 +81,8 @@ impl OrchestratorGateway {
         let app = create_http_router(
             Arc::clone(&self.service_registry),
             Arc::clone(&self.metrics_collector),
+            Arc::clone(&self.router),
+            Arc::clone(&self.memory_manager),
         );
 
         let listener = tokio::net::TcpListener::bind(&addr)
@@ -97,14 +98,14 @@ impl OrchestratorGateway {
 
     /// Initialize tracing for logging
     fn init_tracing(&self) {
-        let _subscriber = tracing_subscriber::fmt()
+        let _ = tracing_subscriber::fmt()
             .with_max_level(Level::INFO)
-            .init();
+            .try_init();
     }
 
     /// Get a reference to the router
-    pub fn get_router(&self) -> &Router {
-        &self.router
+    pub fn get_router(&self) -> Arc<OrchestratorRouter> {
+        Arc::clone(&self.router)
     }
 
     /// Get a reference to the service registry

@@ -5,7 +5,7 @@ use std::sync::Arc;
 pub struct MemoryManager {
     warm_swap: Arc<WarmSwapManager>,
     semantic_cache: Arc<SemanticCache>,
-    max_vram_mb: usize,
+    _max_vram_mb: usize,
 }
 
 impl MemoryManager {
@@ -17,7 +17,7 @@ impl MemoryManager {
         Ok(MemoryManager {
             warm_swap: Arc::new(WarmSwapManager::new(max_vram_mb, max_cache_size)?),
             semantic_cache: Arc::new(SemanticCache::new(1000, cache_similarity_threshold)),
-            max_vram_mb,
+            _max_vram_mb: max_vram_mb,
         })
     }
 
@@ -76,7 +76,7 @@ mod tests {
     #[test]
     fn test_memory_manager_creation() {
         let manager = MemoryManager::new(4096, 3, 0.92).unwrap();
-        assert_eq!(manager.max_vram_mb, 4096);
+        assert_eq!(manager._max_vram_mb, 4096);
         assert!(manager.is_healthy());
     }
 }

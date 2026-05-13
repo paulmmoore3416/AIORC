@@ -1,5 +1,4 @@
 use serde::{Deserialize, Serialize};
-use std::collections::HashMap;
 use std::path::PathBuf;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -48,6 +47,8 @@ pub struct ModelConfig {
     pub name: String,
     pub model_path: PathBuf,
     pub model_type: ModelType,
+    pub backend: Option<String>, // "ollama", "simulation", "llamacpp"
+    pub ollama_endpoint: Option<String>,
     pub parameters: usize,
     pub vram_required_mb: usize,
     pub port: u16,
